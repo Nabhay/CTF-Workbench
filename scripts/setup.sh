@@ -25,4 +25,7 @@ uv sync --group dev
 echo "Installing frontend dependencies..."
 npm --prefix "$ROOT/apps/web" install
 
+echo "Applying database migrations..."
+uv run alembic upgrade head
+
 echo "Install complete. Run ./scripts/dev.sh"

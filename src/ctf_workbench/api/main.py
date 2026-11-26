@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ctf_workbench import __version__
 from ctf_workbench.config import Settings, get_settings
+from ctf_workbench.db.runtime import database_status, get_database, init_database, reset_database
 
 
 class HealthResponse(BaseModel):
@@ -18,7 +19,8 @@ class HealthResponse(BaseModel):
     api: Literal["ok"] = "ok"
     bind: str
     data_root: str
-    database: str = Field(description="Redacted URL; connectivity is checked in M0-02.")
+    database: str = Field(description="Redacted database URL")
+    database_status: Literal["ok", "unavailable", "unmigrated"]
     docker_configured: bool
     worker: Literal["separate_process"] = "separate_process"
 
@@ -29,7 +31,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         resolved.ensure_data_root()
+        init_database(resolved)
         yield
+        reset_database()
 
     application = FastAPI(
         title="CTF Workbench",
@@ -49,11 +53,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/api/v1/health", response_model=HealthResponse)
     def health() -> HealthResponse:
         current = get_settings()
+        try:
+            engine = get_database().engine
+            db_state = database_status(engine)
+        except RuntimeError:
+            db_state = "unavailable"
         return HealthResponse(
             version=__version__,
             bind=f"{current.bind_host}:{current.bind_port}",
             data_root=str(current.data_root.expanduser().resolve()),
             database=current.redacted_database_url(),
+            database_status=db_state,
             docker_configured=current.docker_host is not None,
         )
 

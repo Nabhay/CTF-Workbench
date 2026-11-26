@@ -23,4 +23,7 @@ uv sync --group dev
 Write-Host "Installing frontend dependencies..."
 npm --prefix (Join-Path $Root "apps\web") install
 
+Write-Host "Applying database migrations..."
+uv run alembic upgrade head
+
 Write-Host "Install complete. Run .\scripts\dev.ps1"

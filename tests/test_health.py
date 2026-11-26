@@ -10,8 +10,8 @@ from ctf_workbench.config import get_settings, reset_settings_cache
 def test_health_reports_live_settings() -> None:
     reset_settings_cache()
     app = create_app()
-    client = TestClient(app)
-    response = client.get("/api/v1/health")
+    with TestClient(app) as client:
+        response = client.get("/api/v1/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
@@ -20,4 +20,5 @@ def test_health_reports_live_settings() -> None:
     settings = get_settings()
     assert body["bind"] == f"{settings.bind_host}:{settings.bind_port}"
     assert body["database"] == settings.redacted_database_url()
+    assert body["database_status"] == "ok"
     assert body["worker"] == "separate_process"

@@ -7,6 +7,7 @@ export type HealthResponse = {
   bind: string;
   data_root: string;
   database: string;
+  database_status: "ok" | "unavailable" | "unmigrated";
   docker_configured: boolean;
   worker: "separate_process";
 };

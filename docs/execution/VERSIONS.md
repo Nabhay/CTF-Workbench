@@ -7,6 +7,8 @@ Recorded 2026-11-25 on Windows 10, CPython 3.14.7, Node v26.13.0, uv 0.12.17.
 | FastAPI | 0.165.0 |
 | Pydantic | 2.14.4 |
 | pydantic-settings | 2.16.1 |
+| SQLAlchemy | 2.0.44 |
+| Alembic | 1.17.2 |
 | Uvicorn | 0.54.0 |
 | Starlette | 1.10.0 |
 | pytest | 8.4.2 |

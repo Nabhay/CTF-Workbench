@@ -57,7 +57,7 @@ function HealthDetails({ data }: { data: HealthResponse }) {
     <dl className="grid gap-4">
       <StatusLine label="Control plane" state="up" detail={`v${data.version} on ${data.bind}`} />
       <Row label="Data root" value={data.data_root} />
-      <Row label="Database" value={data.database} />
+      <Row label="Database" value={`${data.database_status} · ${data.database}`} />
       <Row
         label="Docker"
         value={data.docker_configured ? "host configured" : "not configured yet"}

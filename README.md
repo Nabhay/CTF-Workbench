@@ -6,7 +6,7 @@ The workbench is the product. Manual solving works with no model credentials and
 
 ## Current status
 
-**M0-01 is done:** a bootable FastAPI control plane, a worker process, and a React health screen that reports live API availability. Challenge workflows, the sandbox, and agents are not implemented yet.
+**M0-02 is done:** bootable API, worker, health UI, SQLite persistence, and Alembic migrations. Challenge workflows, the sandbox, and agents are not implemented yet.
 
 | Milestone | Intent |
 | --- | --- |
@@ -77,7 +77,7 @@ The launcher checks prerequisites, binds to localhost, prints URLs, and on exit 
 | Frontend typecheck | `npm --prefix apps/web run typecheck` |
 | Unit / API tests | `uv run pytest` |
 | Python lint | `uv run ruff check src tests` |
-| Migrations | not yet (M0-02) |
+| Migrations | `uv run alembic upgrade head` |
 | Integration / browser tests | not yet |
 
 ## Layout

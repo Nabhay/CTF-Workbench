@@ -1,4 +1,4 @@
-x# CTF Workbench — Agent Execution Specification
+# CTF Workbench — Agent Execution Specification
 
 ## 0. Start here
 

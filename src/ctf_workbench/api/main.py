@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from ctf_workbench import __version__
+from ctf_workbench.api.errors import install_error_handlers
 from ctf_workbench.api.events import EventRead
 from ctf_workbench.api.events import router as events_router
 from ctf_workbench.api.ws import router as ws_router
@@ -77,6 +78,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
     )
+    install_error_handlers(application)
     application.include_router(events_router)
     application.include_router(ws_router)
     application.add_middleware(

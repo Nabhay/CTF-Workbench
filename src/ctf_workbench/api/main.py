@@ -14,6 +14,7 @@ from ctf_workbench import __version__
 from ctf_workbench.api.errors import install_error_handlers
 from ctf_workbench.api.events import EventRead
 from ctf_workbench.api.events import router as events_router
+from ctf_workbench.api.refs import router as refs_router
 from ctf_workbench.api.ws import router as ws_router
 from ctf_workbench.config import Settings, get_settings
 from ctf_workbench.db.engine import session_scope
@@ -80,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     install_error_handlers(application)
     application.include_router(events_router)
+    application.include_router(refs_router)
     application.include_router(ws_router)
     application.add_middleware(
         CORSMiddleware,

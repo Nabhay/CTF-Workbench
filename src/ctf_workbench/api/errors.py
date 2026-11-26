@@ -8,7 +8,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from ctf_workbench.domain.errors import ConflictError, WorkbenchError
+from ctf_workbench.domain.errors import ConflictError, NotFoundError, StaleReferenceError, WorkbenchError
 
 REQUEST_ID_HEADER = "X-Request-ID"
 
@@ -32,6 +32,29 @@ def install_error_handlers(app: FastAPI) -> None:
         response = await call_next(request)
         response.headers[REQUEST_ID_HEADER] = request_id
         return response
+
+    @app.exception_handler(StaleReferenceError)
+    async def stale_ref_handler(request: Request, exc: StaleReferenceError) -> JSONResponse:
+        request_id = getattr(request.state, "request_id", request_id_for(request))
+        return JSONResponse(
+            status_code=409,
+            content=error_body(
+                code="stale_reference",
+                message=str(exc),
+                request_id=request_id,
+                details={"current_version": exc.current_version},
+            ),
+            headers={REQUEST_ID_HEADER: request_id},
+        )
+
+    @app.exception_handler(NotFoundError)
+    async def not_found_handler(request: Request, exc: NotFoundError) -> JSONResponse:
+        request_id = getattr(request.state, "request_id", request_id_for(request))
+        return JSONResponse(
+            status_code=404,
+            content=error_body(code="not_found", message=str(exc), request_id=request_id),
+            headers={REQUEST_ID_HEADER: request_id},
+        )
 
     @app.exception_handler(ConflictError)
     async def conflict_handler(request: Request, exc: ConflictError) -> JSONResponse:

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from ctf_workbench.db.models import Event, EventStream, Outbox, utcnow
 from ctf_workbench.domain.ids import GLOBAL_STREAM_ID, new_id
+from ctf_workbench.domain.pagination import clamp_page_size
 
 OUTBOX_DESTINATION_UI = "ui.events"
 
@@ -54,6 +55,25 @@ class EventService:
         )
         session.flush()
         return event
+
+    def list_after(
+        self,
+        session: Session,
+        *,
+        stream_id: str,
+        after_seq: int = 0,
+        limit: int | None = None,
+    ) -> list[Event]:
+        if after_seq < 0:
+            raise ValueError("after_seq must be >= 0")
+        size = clamp_page_size(limit)
+        rows = session.execute(
+            select(Event)
+            .where(Event.stream_id == stream_id, Event.seq > after_seq)
+            .order_by(Event.seq.asc())
+            .limit(size)
+        ).scalars()
+        return list(rows)
 
     def _next_seq(self, session: Session, stream_id: str) -> int:
         stream = session.execute(

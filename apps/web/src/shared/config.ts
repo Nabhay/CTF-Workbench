@@ -11,3 +11,13 @@ export function apiUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${base}${normalized}`;
 }
+
+export function wsUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  const base = getApiBaseUrl();
+  if (base.length > 0) {
+    return `${base.replace(/^http/i, "ws")}${normalized}`;
+  }
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.host}${normalized}`;
+}

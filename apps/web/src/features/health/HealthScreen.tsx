@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { EventStream } from "@/features/health/EventStream";
 import { getHealth, type HealthResponse } from "@/shared/api/health";
 import { getApiBaseUrl } from "@/shared/config";
 
@@ -41,6 +42,7 @@ export function HealthScreen() {
             </>
           ) : null}
           {health.data ? <HealthDetails data={health.data} /> : null}
+          <EventStream enabled={health.isSuccess} />
         </section>
 
         <footer className="mt-16 font-mono text-xs leading-6 text-mute">
